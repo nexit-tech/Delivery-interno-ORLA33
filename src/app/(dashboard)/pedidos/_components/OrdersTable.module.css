@@ -1,0 +1,91 @@
+.tableContainer {
+  overflow-x: auto; /* Responsividade simples */
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  color: #444;
+  font-weight: 600;
+  padding: 1rem;
+  border-bottom: 2px solid #eaeaea;
+}
+
+.table td {
+  padding: 1rem;
+  border-bottom: 1px solid #eaeaea;
+  color: #333;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr:hover {
+  background-color: #fbfbfb;
+}
+
+.idColumn {
+  font-family: monospace;
+  color: #666;
+}
+
+.totalColumn {
+  font-weight: bold;
+  color: #111;
+}
+
+.linkAction {
+  color: #0070f3;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.linkAction:hover {
+  text-decoration: underline;
+}
+
+/* Badges de Status */
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.pending {
+  background-color: #fff8e1;
+  color: #b7791f;
+  border: 1px solid #fbd38d;
+}
+
+.processing {
+  background-color: #ebf8ff;
+  color: #2b6cb0;
+  border: 1px solid #bee3f8;
+}
+
+.completed {
+  background-color: #f0fff4;
+  color: #2f855a;
+  border: 1px solid #c6f6d5;
+}
+
+.cancelled {
+  background-color: #fff5f5;
+  color: #c53030;
+  border: 1px solid #fed7d7;
+}

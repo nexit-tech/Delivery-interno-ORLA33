@@ -1,0 +1,74 @@
+.boardContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  height: 100%; /* Ocupa 100% da área .content */
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .boardContainer {
+    grid-template-columns: 1fr;
+    /* No celular precisa liberar scroll vertical da tela, mas no PC fica fixo */
+    overflow-y: auto; 
+  }
+}
+
+.column {
+  background: #eaecf0;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column; /* Cabeçalho fixo, corpo flexível */
+  height: 100%; /* Estica até o fim do container pai */
+  max-height: 100%; /* Limite de segurança */
+  border: 1px solid #e0e2e7;
+  overflow: hidden; /* Trava scroll na coluna principal para liberar no content */
+}
+
+.columnTitle {
+  padding: 1rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #475467;
+  border-bottom: 1px solid #d0d5dd;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #f9fafb;
+  flex-shrink: 0; /* Header não encolhe */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.columnContent {
+  padding: 1rem;
+  flex: 1; /* Ocupa todo o espaço restante da coluna */
+  overflow-y: auto; /* AQUI ESTÁ A MÁGICA: Scroll só nessa área */
+  
+  /* Estilização da Barra de Rolagem (Scrollbar) */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #d0d5dd transparent;
+}
+
+/* Estilo do Scrollbar para Chrome/Edge/Safari */
+.columnContent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.columnContent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.columnContent::-webkit-scrollbar-thumb {
+  background-color: #d0d5dd;
+  border-radius: 20px;
+}
+
+.columnContent::-webkit-scrollbar-thumb:hover {
+  background-color: #98a2b3;
+}
+
+/* Bolinhas de status */
+.dotPending { width: 8px; height: 8px; background: #ea1d2c; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 3px rgba(234, 29, 44, 0.15); }
+.dotProcessing { width: 8px; height: 8px; background: #f79009; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 3px rgba(247, 144, 9, 0.15); }
+.dotReady { width: 8px; height: 8px; background: #12b76a; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 3px rgba(18, 183, 106, 0.15); }

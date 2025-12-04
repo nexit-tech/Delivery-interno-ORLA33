@@ -1,0 +1,13 @@
+.layout {
+  min-height: 100vh;
+  background-color: #f2f4f7;
+  display: flex;
+  flex-direction: column;
+}
+
+.mainContent {
+  /* Adicionamos padding-top igual à altura da Navbar (70px) */
+  padding-top: 70px; 
+  width: 100%;
+  flex: 1; /* Ocupa o resto da tela */
+}

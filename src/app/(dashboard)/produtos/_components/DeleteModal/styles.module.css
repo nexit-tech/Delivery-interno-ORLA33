@@ -1,0 +1,72 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  animation: scaleUp 0.2s ease-out;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.iconContainer {
+  width: 48px;
+  height: 48px;
+  background: #fef3f2;
+  color: #d92d20;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
+  border: 4px solid #fef3f2;
+}
+
+.title { font-size: 1.1rem; font-weight: 700; color: #101828; margin-bottom: 0.5rem; }
+.description { color: #667085; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem; }
+
+.actions { display: flex; gap: 0.75rem; justify-content: center; }
+
+.cancelBtn {
+  flex: 1;
+  padding: 0.6rem;
+  border: 1px solid #d0d5dd;
+  background: white;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #344054;
+  cursor: pointer;
+}
+
+.confirmBtn {
+  flex: 1;
+  padding: 0.6rem;
+  border: none;
+  background: #d92d20;
+  border-radius: 8px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+}
+.confirmBtn:hover { background: #b42318; }
+
+.closeIcon {
+  position: absolute; top: 1rem; right: 1rem;
+  background: none; border: none; color: #98a2b3; cursor: pointer;
+}

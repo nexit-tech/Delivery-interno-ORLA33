@@ -1,0 +1,255 @@
+.container {
+  height: calc(100vh - 70px);
+  display: flex;
+  flex-direction: column;
+  background-color: #f2f4f7;
+  overflow: hidden;
+}
+
+.header {
+  padding: 2rem 2rem 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #101828;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: #667085;
+  font-size: 0.95rem;
+}
+
+.exportBtn {
+  background: white;
+  border: 1px solid #d0d5dd;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #344054;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.exportBtn:hover {
+  background: #f9fafb;
+  border-color: #b2b6c0;
+}
+
+/* --- BARRA DE FILTROS --- */
+.filtersBar {
+  padding: 0 2rem;
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-shrink: 0;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.filterGroup label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #344054;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.dateInputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  padding: 4px;
+  border: 1px solid #eaecf0;
+  border-radius: 8px;
+}
+
+.dateInputs span {
+  color: #667085;
+  font-size: 0.9rem;
+}
+
+/* CORREÇÃO DO ERRO AQUI: */
+/* Agora estilizamos especificamente o input dentro da classe .dateInputs */
+.dateInputs input {
+  border: none;
+  background: transparent;
+  padding: 0.4rem;
+  font-family: inherit;
+  color: #101828;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+}
+
+/* E o select dentro do .filterGroup */
+.filterGroup select {
+  padding: 0.5rem;
+  border: 1px solid #eaecf0;
+  border-radius: 6px;
+  font-family: inherit;
+  color: #101828;
+  font-weight: 500;
+  outline: none;
+  background: white;
+  cursor: pointer;
+}
+
+.filterGroup select:focus {
+  border-color: #000;
+}
+
+/* --- GRID DE KPIs --- */
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  padding: 0 2rem;
+  margin-bottom: 2rem;
+  flex-shrink: 0;
+}
+
+.kpiCard {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #eaecf0;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.iconBox {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blue { background: #eff8ff; color: #2e90fa; }
+.orange { background: #fffaeb; color: #dc6803; }
+.green { background: #ecfdf3; color: #039855; }
+
+.kpiLabel {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #667085;
+  margin-bottom: 4px;
+}
+
+.kpiValue {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #101828;
+}
+
+/* --- TABELA --- */
+.tableSection {
+  flex: 1;
+  padding: 0 2rem 2rem 2rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #101828;
+  margin-bottom: 1rem;
+}
+
+.tableWrapper {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #eaecf0;
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: #d0d5dd transparent;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th {
+  background: #f9fafb;
+  padding: 1rem 1.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475467;
+  border-bottom: 1px solid #eaecf0;
+  text-transform: uppercase;
+  position: sticky;
+  top: 0;
+}
+
+.table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eaecf0;
+  color: #101828;
+  font-size: 0.9rem;
+}
+
+.partnerName { font-weight: 600; }
+.orderId { font-family: monospace; color: #667085; }
+.moneyValue { font-weight: 700; text-align: right; }
+
+.badgeSuccess {
+  background: #ecfdf3;
+  color: #027a48;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem;
+  color: #667085;
+  font-style: italic;
+}
+
+.footerRow {
+  background: #f9fafb;
+  font-weight: 700;
+}
+
+.totalFooter {
+  text-align: right;
+  color: #101828;
+  font-size: 1.1rem;
+}
+
+.clickableRow {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.clickableRow:hover {
+  background-color: #f2f4f7; /* Um cinza leve ao passar o mouse */
+}

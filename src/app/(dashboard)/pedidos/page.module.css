@@ -1,0 +1,56 @@
+.container {
+  /* IMPORTANTE: Calcula a altura exata descontando a navbar */
+  height: calc(100vh - 70px); 
+  display: flex;
+  flex-direction: column;
+  background-color: #f2f4f7;
+  overflow: hidden; /* Mantém a tela travada */
+}
+
+/* O resto do CSS continua igual, só alteramos a .container */
+
+.header {
+  padding: 1.5rem 2rem 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #101828;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: #667085;
+  font-size: 0.95rem;
+}
+
+.newOrderBtn {
+  background-color: #ea1d2c;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(234, 29, 44, 0.2);
+}
+
+.newOrderBtn:hover {
+  background-color: #d11927;
+  transform: translateY(-1px);
+}
+
+.content {
+  flex: 1;
+  padding: 0 2rem 1.5rem 2rem; /* Ajuste leve no padding inferior */
+  overflow: hidden;
+}

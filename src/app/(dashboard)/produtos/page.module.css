@@ -1,0 +1,105 @@
+.container {
+  /* Calcula altura total menos a Navbar (70px) */
+  height: calc(100vh - 70px);
+  display: flex;
+  flex-direction: column;
+  background-color: #f2f4f7;
+  overflow: hidden; /* Trava o scroll da página inteira */
+}
+
+.header {
+  padding: 2rem 2rem 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0; /* Garante que o header não encolha */
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #101828;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: #667085;
+  font-size: 0.95rem;
+}
+
+.newBtn {
+  background-color: #101828;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+}
+
+.newBtn:hover {
+  background-color: #1d2939;
+  transform: translateY(-1px);
+}
+
+/* --- ESTILOS DAS ABAS (TABS) --- */
+.tabsContainer {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0 2rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #eaecf0;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.5rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent; /* Borda invisível por padrão */
+  color: #667085;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  color: #101828;
+}
+
+.activeTab {
+  color: #ea1d2c; /* Vermelho destaque */
+  border-bottom-color: #ea1d2c; /* Linha vermelha embaixo */
+}
+
+/* Área de conteúdo rolável */
+.content {
+  flex: 1; /* Ocupa o restante do espaço vertical */
+  padding: 0 2rem 2rem 2rem;
+  overflow-y: auto; /* Scroll apenas nesta área */
+  
+  /* Scrollbar bonita */
+  scrollbar-width: thin;
+  scrollbar-color: #d0d5dd transparent;
+}
+
+.content::-webkit-scrollbar {
+  width: 6px;
+}
+.content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.content::-webkit-scrollbar-thumb {
+  background-color: #d0d5dd;
+  border-radius: 20px;
+}

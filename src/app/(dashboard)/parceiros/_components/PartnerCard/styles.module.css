@@ -1,0 +1,89 @@
+.card {
+  background: white;
+  border: 1px solid #eaecf0;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(16, 24, 40, 0.02);
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
+  border-color: #d0d5dd;
+}
+
+.header {
+  padding: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  border-bottom: 1px solid #f2f4f7;
+}
+
+.iconContainer {
+  width: 40px; height: 40px;
+  background: #f2f4f7; color: #101828;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.headerInfo { flex: 1; }
+
+.name {
+  font-size: 1rem; font-weight: 700; color: #101828;
+  margin-bottom: 2px;
+}
+
+.id { font-size: 0.75rem; color: #98a2b3; font-family: monospace; }
+
+.actions { display: flex; gap: 0.5rem; }
+
+.actionBtn {
+  background: none; border: 1px solid transparent;
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: #667085; cursor: pointer; transition: all 0.2s;
+}
+.actionBtn:hover { background: #f2f4f7; color: #101828; }
+.deleteBtn:hover { background: #fef3f2; color: #d92d20; }
+
+.body { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
+
+.row { display: flex; justify-content: space-between; align-items: center; }
+
+.label {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.85rem; color: #667085; font-weight: 500;
+}
+
+.value { font-size: 0.9rem; font-weight: 600; color: #101828; }
+
+.divider { height: 1px; background: #f2f4f7; margin: 0.25rem 0; }
+
+.credentialsBox {
+  background: #f9fafb;
+  border: 1px solid #eaecf0;
+  border-radius: 8px;
+  padding: 0.75rem;
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+
+.credentialRow {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.credLabel {
+  display: flex; align-items: center; gap: 0.5rem;
+  color: #667085; font-size: 0.8rem;
+}
+
+.credValue { font-family: monospace; color: #101828; font-size: 0.95rem; }
+
+.copyBtn {
+  background: none; border: none; cursor: pointer; color: #98a2b3;
+  padding: 4px; border-radius: 4px; transition: color 0.2s;
+}
+.copyBtn:hover { color: #101828; background: #eaecf0; }

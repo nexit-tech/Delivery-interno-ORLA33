@@ -1,0 +1,170 @@
+.tableWrapper {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #eaecf0;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05);
+  overflow: hidden; /* Garante que os cantos arredondados cortem a tabela */
+  margin-bottom: 1rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th {
+  background: #f9fafb;
+  padding: 1rem 1.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475467;
+  border-bottom: 1px solid #eaecf0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eaecf0;
+  color: #101828;
+  vertical-align: middle;
+  font-size: 0.95rem;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr:hover {
+  background: #fbfbfb;
+}
+
+/* Coluna do Produto (Ícone + Nome) */
+.productCell {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.productIcon {
+  width: 40px;
+  height: 40px;
+  background: #f2f4f7;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #667085;
+}
+
+.productName {
+  font-weight: 600;
+  color: #101828;
+}
+
+/* Badge de Categoria */
+.categoryBadge {
+  background: #f2f4f7;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  color: #344054;
+  font-weight: 500;
+  display: inline-block;
+}
+
+/* Preço */
+.price {
+  font-family: monospace; /* Fonte mono para números alinharem melhor */
+  font-weight: 600;
+  color: #101828;
+  font-size: 1rem;
+}
+
+/* Status Interativo (Botão) */
+.statusBtn {
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-family: inherit; /* Herda a Montserrat */
+}
+
+.statusBtn::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 8px;
+  display: inline-block;
+}
+
+/* Cores do Status Ativo */
+.active {
+  background: #ecfdf3;
+  color: #027a48;
+}
+.active::before { background: #12b76a; }
+.active:hover {
+  background: #d1fadf; /* Efeito hover para indicar que é clicável */
+  transform: scale(1.05);
+}
+
+/* Cores do Status Inativo */
+.inactive {
+  background: #fef3f2;
+  color: #b42318;
+}
+.inactive::before { background: #f04438; }
+.inactive:hover {
+  background: #fee4e2;
+  transform: scale(1.05);
+}
+
+/* Ações (Editar / Excluir) */
+.actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.actionBtn {
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  padding: 8px;
+  margin-left: 4px;
+  border-radius: 8px;
+  color: #667085;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionBtn:hover {
+  background: #f2f4f7;
+  color: #101828;
+  border-color: #d0d5dd;
+}
+
+/* Botão de Deletar específico (Fica vermelho no hover) */
+.deleteBtn:hover {
+  background: #fef3f2;
+  color: #d92d20;
+  border-color: #feccd1;
+}
+
+/* Estado Vazio (Sem produtos) */
+.empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #667085;
+  font-style: italic;
+  font-size: 0.95rem;
+}

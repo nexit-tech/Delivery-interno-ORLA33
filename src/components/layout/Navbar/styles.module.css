@@ -1,0 +1,142 @@
+.navbar {
+  height: 70px; /* Altura fixa da barra */
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #eaecf0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  position: fixed; /* Fixa no topo */
+  top: 0;
+  left: 0;
+  z-index: 50; /* Garante que fique acima de tudo */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logoIcon {
+  width: 32px;
+  height: 32px;
+  background: #ea1d2c;
+  color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.8rem;
+}
+
+.logoText {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #101828;
+  letter-spacing: -0.5px;
+}
+
+.highlight { color: #ea1d2c; }
+
+.nav {
+  display: flex;
+  gap: 0.5rem;
+  height: 100%;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  color: #667085;
+  font-weight: 600;
+  font-size: 0.9rem;
+  height: 40px; /* Altura do botão */
+  margin-top: 15px; /* Centraliza verticalmente manual */
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.link:hover {
+  background-color: #f9fafb;
+  color: #101828;
+}
+
+.active {
+  background-color: #fef3f2;
+  color: #ea1d2c;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.iconBtn {
+  background: none;
+  border: none;
+  color: #667085;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.notificationDot {
+  position: absolute;
+  top: 0;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  background: #ea1d2c;
+  border-radius: 50%;
+  border: 1px solid white;
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background: #eaecf0;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  background: #f2f4f7;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #475467;
+  font-size: 0.85rem;
+}
+
+.profileName {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #101828;
+}
+
+.logoutBtn {
+  background: none;
+  border: none;
+  color: #98a2b3;
+  cursor: pointer;
+  padding: 6px;
+  transition: color 0.2s;
+}
+
+.logoutBtn:hover { color: #d92d20; }
