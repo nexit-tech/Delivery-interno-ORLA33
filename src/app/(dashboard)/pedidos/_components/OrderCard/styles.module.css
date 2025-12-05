@@ -133,33 +133,41 @@
 
 .btn:active { transform: scale(0.98); }
 
-/* Botão Aceitar (Verde agora) */
+/* Botão Aceitar (Verde) */
 .btnAccept {
   background-color: #12b76a; 
   color: white;
   border: 1px solid #12b76a;
-  flex: 1; /* Ocupa espaço igual */
+  flex: 1; /* Ocupa o resto do espaço */
 }
 .btnAccept:hover { background-color: #039855; border-color: #039855; }
 
-/* Botão Recusar (Novo: Borda Vermelha) */
-.btnReject {
-  background-color: white;
-  color: #b42318;
-  border: 1px solid #fecaca;
-  flex: 1; /* Ocupa espaço igual */
+/* NOVO: Lixeirinha Soft (Vermelho clarinho, quadrado) */
+.btnSoftReject {
+  background-color: #fff1f2; /* Fundo rosinha claro */
+  color: #e11d48; /* Ícone vermelho */
+  border: 1px solid #fecdd3;
+  width: 42px; /* Quadrado */
+  padding: 0; /* Remove padding lateral para centralizar icone */
+  flex-shrink: 0; /* Não encolhe */
 }
-.btnReject:hover { background-color: #fef2f2; border-color: #b42318; }
+.btnSoftReject:hover { 
+  background-color: #ffe4e6; 
+  border-color: #fda4af;
+  color: #be123c;
+}
 
 /* Outros Status */
 .btnAdvance {
   background-color: #f79009;
   color: white;
+  flex: 1;
 }
 .btnAdvance:hover { background-color: #dc6803; }
 
 .btnFinish {
   background-color: #12b76a;
   color: white;
+  flex: 1;
 }
 .btnFinish:hover { background-color: #039855; }

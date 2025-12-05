@@ -3,16 +3,15 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import PartnerBottomNav from '../_components/PartnerBottomNav';
-import OrderDetailModal from '../_components/OrderDetailModal'; // <--- Importei
+import OrderDetailModal from '../_components/OrderDetailModal'; 
 import { Calendar, DollarSign, Package, ChevronRight } from 'lucide-react';
 import styles from './page.module.css';
 import { useAuth } from '@/contexts/AuthContext';
 
-// ⚠️ MANTENHA O ID DO PARCEIRO AQUI
-const { partnerId } = useAuth();
-const TEMP_PARTNER_ID = partnerId;
-
 export default function FinanceiroParceiroPage() {
+  // A CORREÇÃO ESTÁ AQUI: Hook dentro do componente
+  const { partnerId } = useAuth();
+
   const today = new Date();
   const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
   
@@ -23,12 +22,11 @@ export default function FinanceiroParceiroPage() {
   const [summary, setSummary] = useState({ total: 0, count: 0 });
   const [orders, setOrders] = useState<any[]>([]);
   
-  // Estado do Modal
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   useEffect(() => {
     async function fetchData() {
-      if (!TEMP_PARTNER_ID || TEMP_PARTNER_ID.includes('COLE_AQUI')) return;
+      if (!partnerId) return;
       setLoading(true);
 
       const { data, error } = await supabase
@@ -40,20 +38,19 @@ export default function FinanceiroParceiroPage() {
           status,
           order_items ( name:product_name, quantity, price )
         `)
-        .eq('partner_id', TEMP_PARTNER_ID)
+        .eq('partner_id', partnerId)
         .eq('status', 'COMPLETED')
         .gte('created_at', `${startDate}T00:00:00`)
         .lte('created_at', `${endDate}T23:59:59`)
         .order('created_at', { ascending: false });
 
       if (!error && data) {
-        // Mapeia para formatar os itens dentro do objeto order
         const formatted = data.map((order: any) => ({
           id: order.id,
           total: order.total,
           created_at: order.created_at,
           status: order.status,
-          items: order.order_items // Passa os itens para o modal usar
+          items: order.order_items 
         }));
 
         setOrders(formatted);
@@ -63,7 +60,7 @@ export default function FinanceiroParceiroPage() {
       setLoading(false);
     }
     fetchData();
-  }, [startDate, endDate]);
+  }, [startDate, endDate, partnerId]); // Adicionei partnerId
 
   return (
     <div className={styles.container}>
@@ -114,7 +111,7 @@ export default function FinanceiroParceiroPage() {
               <div 
                 key={order.id} 
                 className={styles.transactionCard}
-                onClick={() => setSelectedOrder(order)} // <--- CLIQUE AQUI
+                onClick={() => setSelectedOrder(order)}
               >
                 <div className={styles.transInfo}>
                   <span className={styles.transId}>Pedido #{order.id}</span>
@@ -141,7 +138,6 @@ export default function FinanceiroParceiroPage() {
 
       <PartnerBottomNav />
 
-      {/* MODAL DE DETALHES */}
       <OrderDetailModal 
         isOpen={!!selectedOrder}
         order={selectedOrder}

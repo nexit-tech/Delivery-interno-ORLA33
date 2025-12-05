@@ -1,18 +1,17 @@
 import { Order } from '@/types';
-import { Clock, User, CheckCircle, ArrowRight, Play, XCircle } from 'lucide-react';
+import { Clock, User, CheckCircle, ArrowRight, Play, Trash2 } from 'lucide-react';
 import styles from './styles.module.css';
 
 interface OrderCardProps {
   order: Order;
   onAdvance: (id: string) => void;
-  onReject?: (id: string) => void; // Nova prop opcional
+  onReject?: (id: string) => void; // Serve para Recusar (Pendente) ou Cancelar (Preparo)
 }
 
 export default function OrderCard({ order, onAdvance, onReject }: OrderCardProps) {
   
   const time = new Date(order.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-  // Função para evitar abrir o modal ao clicar nos botões
   const handleAction = (e: React.MouseEvent, action: () => void) => {
     e.stopPropagation();
     action();
@@ -47,16 +46,16 @@ export default function OrderCard({ order, onAdvance, onReject }: OrderCardProps
         </div>
         
         <div className={styles.actions}>
-          {/* Ações para PENDENTE: Recusar e Aceitar */}
+          {/* --- PENDENTE (Lixeira Soft + Aceitar) --- */}
           {order.status === 'PENDING' && (
             <>
               {onReject && (
                 <button 
                   onClick={(e) => handleAction(e, () => onReject(order.id))} 
-                  className={`${styles.btn} ${styles.btnReject}`}
+                  className={`${styles.btn} ${styles.btnSoftReject}`}
                   title="Recusar Pedido"
                 >
-                  <XCircle size={16} /> Recusar
+                  <Trash2 size={20} />
                 </button>
               )}
               <button 
@@ -69,17 +68,28 @@ export default function OrderCard({ order, onAdvance, onReject }: OrderCardProps
             </>
           )}
 
-          {/* Ações para EM PREPARO */}
+          {/* --- EM PREPARO (Lixeira Soft + Pronto) --- */}
           {order.status === 'PROCESSING' && (
-            <button 
-              onClick={(e) => handleAction(e, () => onAdvance(order.id))} 
-              className={`${styles.btn} ${styles.btnAdvance}`}
-            >
-              Pronto <ArrowRight size={16} />
-            </button>
+            <>
+              {onReject && (
+                <button 
+                  onClick={(e) => handleAction(e, () => onReject(order.id))} 
+                  className={`${styles.btn} ${styles.btnSoftReject}`}
+                  title="Cancelar Pedido"
+                >
+                  <Trash2 size={20} />
+                </button>
+              )}
+              <button 
+                onClick={(e) => handleAction(e, () => onAdvance(order.id))} 
+                className={`${styles.btn} ${styles.btnAdvance}`}
+              >
+                Pronto <ArrowRight size={16} />
+              </button>
+            </>
           )}
 
-          {/* Ações para PRONTO */}
+          {/* --- PRONTO --- */}
           {order.status === 'READY' && (
             <button 
               onClick={(e) => handleAction(e, () => onAdvance(order.id))} 

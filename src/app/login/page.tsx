@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { Lock, User, Loader2 } from 'lucide-react';
+import { Lock, User, Loader2, Eye, EyeOff } from 'lucide-react';
 import styles from './page.module.css';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -18,9 +19,13 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
 
+    // Pegando do .env (ou vazio se não estiver definido)
+    const adminUser = process.env.NEXT_PUBLIC_ADMIN_USER || '';
+    const adminPass = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || '';
+
     try {
-      // 1. Verifica ADMIN Hardcoded
-      if (username === 'orla33steakhouse' && password === 'Abcd@4@5@6') {
+      // 1. Verifica ADMIN via Variáveis de Ambiente
+      if (username === adminUser && password === adminPass) {
         login('admin');
         return;
       }
@@ -30,7 +35,7 @@ export default function LoginPage() {
         .from('partners')
         .select('*')
         .eq('login', username)
-        .eq('password', password) // Comparação direta (simples)
+        .eq('password', password)
         .single();
 
       if (error || !data) {
@@ -59,7 +64,7 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin} className={styles.form}>
           <div className={styles.inputGroup}>
-            <User size={18} className={styles.icon} />
+            <User size={18} className={styles.iconLeft} />
             <input 
               type="text" 
               placeholder="Login" 
@@ -70,14 +75,21 @@ export default function LoginPage() {
           </div>
 
           <div className={styles.inputGroup}>
-            <Lock size={18} className={styles.icon} />
+            <Lock size={18} className={styles.iconLeft} />
             <input 
-              type="password" 
+              type={showPassword ? 'text' : 'password'}
               placeholder="Senha" 
               value={password} 
               onChange={e => setPassword(e.target.value)} 
               required
             />
+            <button 
+              type="button" 
+              className={styles.eyeBtn}
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
 
           {error && <p className={styles.error}>{error}</p>}

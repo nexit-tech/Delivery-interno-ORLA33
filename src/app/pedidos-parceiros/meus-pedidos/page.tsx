@@ -3,12 +3,9 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import PartnerBottomNav from '../_components/PartnerBottomNav';
-import { Clock, CheckCircle, XCircle, Package, AlertCircle, Trash2 } from 'lucide-react';
+import { Clock, CheckCircle, Package, AlertCircle, Trash2 } from 'lucide-react';
 import styles from './page.module.css';
 import { useAuth } from '@/contexts/AuthContext';
-
-const { partnerId } = useAuth();
-const TEMP_PARTNER_ID = partnerId;
 
 interface MyOrder {
   id: string; 
@@ -20,11 +17,14 @@ interface MyOrder {
 }
 
 export default function MeusPedidosPage() {
+  // A CORREÇÃO ESTÁ AQUI: Hook dentro do componente
+  const { partnerId } = useAuth();
+
   const [orders, setOrders] = useState<MyOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchMyOrders = async (forceLoading = true) => {
-    if (!TEMP_PARTNER_ID || TEMP_PARTNER_ID.includes('COLE_AQUI')) return;
+    if (!partnerId) return;
 
     try {
       if (forceLoading) setLoading(true);
@@ -38,10 +38,10 @@ export default function MeusPedidosPage() {
           created_at,
           order_items ( product_name, quantity )
         `)
-        .eq('partner_id', TEMP_PARTNER_ID)
-        .neq('status', 'COMPLETED') // Esconde Concluídos
-        .neq('status', 'CANCELLED') // Esconde Cancelados
-        .neq('status', 'NOT_ACCEPTED') // Esconde Recusados (opcional, se quiser limpar a lista)
+        .eq('partner_id', partnerId)
+        .neq('status', 'COMPLETED') 
+        .neq('status', 'CANCELLED') 
+        .neq('status', 'NOT_ACCEPTED') 
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -62,7 +62,6 @@ export default function MeusPedidosPage() {
           };
         });
 
-        // Ordenação: Prontos > Em Preparo > Pendentes
         const statusPriority: Record<string, number> = {
           'READY': 1,
           'PROCESSING': 2,
@@ -72,8 +71,7 @@ export default function MeusPedidosPage() {
         formatted.sort((a, b) => {
           const priorityA = statusPriority[a.status] || 99;
           const priorityB = statusPriority[b.status] || 99;
-          if (priorityA !== priorityB) return priorityA - priorityB;
-          return 0; 
+          return priorityA - priorityB;
         });
 
         setOrders(formatted);
@@ -85,15 +83,12 @@ export default function MeusPedidosPage() {
     }
   };
 
-  // Função de Cancelar
   const handleCancelOrder = async (id: string) => {
     if (!confirm('Deseja realmente cancelar este pedido?')) return;
 
     try {
-      // 1. Remove da lista visualmente na hora (Otimista)
       setOrders(prev => prev.filter(o => o.id !== id));
 
-      // 2. Atualiza no Banco
       const { error } = await supabase
         .from('orders')
         .update({ status: 'CANCELLED' })
@@ -104,15 +99,17 @@ export default function MeusPedidosPage() {
     } catch (error) {
       console.error('Erro ao cancelar:', error);
       alert('Não foi possível cancelar. Tente novamente.');
-      fetchMyOrders(false); // Recarrega se der erro
+      fetchMyOrders(false); 
     }
   };
 
   useEffect(() => {
-    fetchMyOrders(true);
-    const interval = setInterval(() => fetchMyOrders(false), 5000);
-    return () => clearInterval(interval);
-  }, []);
+    if (partnerId) {
+      fetchMyOrders(true);
+      const interval = setInterval(() => fetchMyOrders(false), 5000);
+      return () => clearInterval(interval);
+    }
+  }, [partnerId]); // Adicionei partnerId na dependência
 
   const getStatusInfo = (status: string) => {
     switch (status) {
@@ -164,7 +161,6 @@ export default function MeusPedidosPage() {
                     {statusInfo.label}
                   </div>
 
-                  {/* BOTÃO CANCELAR: Só aparece se for PENDING */}
                   {order.status === 'PENDING' && (
                     <button 
                       className={styles.cancelBtn} 

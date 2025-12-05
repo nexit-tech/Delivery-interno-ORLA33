@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/contexts/AuthContext'; // <--- Importe o Auth
+import { useAuth } from '@/contexts/AuthContext'; 
 import PartnerBottomNav from '../_components/PartnerBottomNav';
-import { User, Save, Lock, Phone, Store, Key, LogOut } from 'lucide-react'; // Import LogOut
+import { User, Save, Phone, Store, Key, LogOut } from 'lucide-react'; 
 import styles from './page.module.css';
 
 export default function PerfilPage() {
-  // Pega o ID e a função logout do contexto
   const { partnerId, logout } = useAuth(); 
   
   const [loading, setLoading] = useState(true);
@@ -21,7 +20,7 @@ export default function PerfilPage() {
 
   useEffect(() => {
     async function fetchPartner() {
-      if (!partnerId) return; // Espera carregar o ID
+      if (!partnerId) return; 
 
       try {
         const { data, error } = await supabase
@@ -67,13 +66,6 @@ export default function PerfilPage() {
 
   return (
     <div className={styles.container}>
-      {/* Botão Sair no Topo Direito */}
-      <div style={{width: '100%', padding: '1rem 1.5rem 0', display: 'flex', justifyContent: 'flex-end'}}>
-        <button onClick={logout} style={{background: 'none', border: 'none', color: '#d92d20', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', fontWeight: 600}}>
-          <LogOut size={18} /> Sair
-        </button>
-      </div>
-
       {/* Cabeçalho */}
       <div className={styles.profileHeader}>
         <div className={styles.avatarCircle}>
@@ -112,8 +104,14 @@ export default function PerfilPage() {
           </div>
         </div>
 
+        {/* Botão Salvar Principal */}
         <button className={styles.saveBtn} onClick={handleSave} disabled={saving || loading}>
           {saving ? 'Salvando...' : <><Save size={18} /> Salvar Alterações</>}
+        </button>
+
+        {/* Botão Sair Agora Em Baixo */}
+        <button className={styles.logoutBtn} onClick={logout}>
+          <LogOut size={18} /> Sair da conta
         </button>
       </div>
 

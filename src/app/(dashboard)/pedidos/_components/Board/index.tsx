@@ -19,16 +19,30 @@ export default function Board({ initialOrders }: BoardProps) {
     setOrders(initialOrders);
   }, [initialOrders]);
 
-  // --- NOTIFICAÇÃO ---
-  const sendNotification = async (order: Order) => {
+  // --- NOTIFICAÇÃO PADRONIZADA ---
+  // Adicionei 'ACCEPTED' no tipo
+  const sendNotification = async (order: Order, type: 'READY' | 'REJECTED' | 'CANCELLED' | 'ACCEPTED') => {
     try {
       const itemsList = order.items.map(item => `${item.quantity}x ${item.name}`).join('\n');
-      const messageBody = `${order.partnerName} seu pedido:\n\n${itemsList}\n\nEstá pronto! Pode vir retirar.`;
+      
+      // Cabeçalho Padrão
+      const header = `${order.partnerName} seu pedido #${order.id}`;
+      
+      // Mensagem Final baseada no tipo
+      let footer = '';
+      if (type === 'ACCEPTED') footer = 'Seu pedido foi aceito e já está sendo preparado!';
+      if (type === 'READY') footer = 'Está pronto, venha retirar';
+      if (type === 'REJECTED') footer = 'Seu pedido foi recusado pelo estabelecimento.';
+      if (type === 'CANCELLED') footer = 'Seu pedido foi cancelado pelo estabelecimento.';
+
+      // Monta a mensagem completa
+      const messageBody = `${header}\n\n${itemsList}\n\n${footer}`;
       
       const rawPhone = order.partnerWhatsapp || '';
       const cleanPhone = rawPhone.replace(/\D/g, '');
       const finalPhone = `55${cleanPhone}`;
 
+      // Dispara o Webhook
       await fetch('https://n8n-nexit-n8n.7rdajt.easypanel.host/webhook/notificacao', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -36,7 +50,8 @@ export default function Board({ initialOrders }: BoardProps) {
           telefone: finalPhone,
           mensagem: messageBody,
           loja: order.partnerName,
-          pedido_id: order.id
+          pedido_id: order.id,
+          status_evento: type 
         })
       });
     } catch (error) {
@@ -55,11 +70,11 @@ export default function Board({ initialOrders }: BoardProps) {
       if (error) throw error;
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
-      alert('Erro ao atualizar pedido.');
+      alert('Erro ao atualizar pedido no banco.');
     }
   };
 
-  // --- AVANÇAR ---
+  // --- AVANÇAR (PENDENTE -> PREPARO -> PRONTO -> CONCLUÍDO) ---
   const handleAdvanceOrder = (id: string) => {
     const order = orders.find(o => o.id === id);
     if (!order) return;
@@ -77,21 +92,41 @@ export default function Board({ initialOrders }: BoardProps) {
 
       updateOrderStatus(id, nextStatus);
 
+      // Notificações Automáticas
+      if (nextStatus === 'PROCESSING') {
+        sendNotification(order, 'ACCEPTED'); // <--- NOVA NOTIFICAÇÃO DE ACEITE
+      }
       if (nextStatus === 'READY') {
-        sendNotification(order);
+        sendNotification(order, 'READY');
       }
     }
   };
 
-  // --- RECUSAR ---
+  // --- RECUSAR (PENDENTE -> RECUSADO) ---
   const handleRejectOrder = (id: string) => {
-    if (!confirm('Tem certeza que deseja recusar este pedido?')) return;
+    const order = orders.find(o => o.id === id);
+    if (!order) return;
 
-    // Remove da tela (Visual)
+    if (!confirm('Tem certeza que deseja RECUSAR este pedido?')) return;
+
+    // Remove da tela
     setOrders(prev => prev.filter(o => o.id !== id));
-
-    // Atualiza no banco para 'NOT_ACCEPTED'
+    // Atualiza Banco
     updateOrderStatus(id, 'NOT_ACCEPTED');
+    // Envia Notificação
+    sendNotification(order, 'REJECTED');
+  };
+
+  // --- CANCELAR (PREPARO -> CANCELADO) ---
+  const handleCancelProcessingOrder = (id: string) => {
+    const order = orders.find(o => o.id === id);
+    if (!order) return;
+
+    if (!confirm('Tem certeza que deseja CANCELAR este pedido em preparo?')) return;
+
+    setOrders(prev => prev.filter(o => o.id !== id));
+    updateOrderStatus(id, 'CANCELLED');
+    sendNotification(order, 'CANCELLED');
   };
 
   const openModal = (order: Order) => setSelectedOrder(order);
@@ -100,7 +135,7 @@ export default function Board({ initialOrders }: BoardProps) {
   // Ordenação
   const pendingOrders = orders
     .filter(o => o.status === 'PENDING')
-    .sort((a, b) => parseInt(a.id) - parseInt(b.id)); // Mais antigo primeiro
+    .sort((a, b) => parseInt(a.id) - parseInt(b.id)); 
 
   const processingOrders = orders
     .filter(o => o.status === 'PROCESSING')
@@ -122,7 +157,7 @@ export default function Board({ initialOrders }: BoardProps) {
                 <OrderCard 
                   order={order} 
                   onAdvance={handleAdvanceOrder} 
-                  onReject={handleRejectOrder} // <--- Passando a função aqui
+                  onReject={handleRejectOrder} 
                 />
               </div>
             ))}
@@ -135,7 +170,11 @@ export default function Board({ initialOrders }: BoardProps) {
           <div className={styles.columnContent}>
             {processingOrders.map(order => (
               <div key={order.id} onClick={() => openModal(order)} style={{cursor: 'pointer'}}>
-                <OrderCard order={order} onAdvance={handleAdvanceOrder} />
+                <OrderCard 
+                  order={order} 
+                  onAdvance={handleAdvanceOrder} 
+                  onReject={handleCancelProcessingOrder}
+                />
               </div>
             ))}
           </div>
