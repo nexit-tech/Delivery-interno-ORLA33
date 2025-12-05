@@ -1,4 +1,4 @@
-export type OrderStatus = 'PENDING' | 'PROCESSING' | 'READY' | 'COMPLETED' | 'NOT_ACCEPTED';
+export type OrderStatus = 'PENDING' | 'PROCESSING' | 'READY' | 'COMPLETED' | 'NOT_ACCEPTED' | 'CANCELLED';
 
 export interface OrderItem {
   name: string;
@@ -22,6 +22,16 @@ export interface Category {
   id: string;
   name: string;
   active: boolean;
+}
+
+// ADICIONEI AQUI A DEFINIÇÃO QUE FALTAVA
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  active: boolean;
+  category: string;      // Nome da categoria (para exibir na lista)
+  category_id?: string;  // ID da categoria (para salvar no banco)
 }
 
 export interface Partner {
