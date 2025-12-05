@@ -8,13 +8,15 @@ interface OrdersTableProps {
 
 export default function OrdersTable({ orders }: OrdersTableProps) {
   
-  // Função auxiliar para formatar status (pode virar componente depois)
+  // Função auxiliar para formatar status
   const getStatusLabel = (status: string) => {
     const map: Record<string, string> = {
       PENDING: 'Pendente',
       PROCESSING: 'Em Preparo',
+      READY: 'Pronto', // Adicionei o status READY aqui para garantir
       COMPLETED: 'Concluído',
-      CANCELLED: 'Cancelado'
+      CANCELLED: 'Cancelado',
+      NOT_ACCEPTED: 'Recusado'
     };
     return map[status] || status;
   };
@@ -39,7 +41,8 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
               <td className={styles.idColumn}>#{order.id}</td>
               <td>{order.partnerName}</td>
               <td>{new Date(order.date).toLocaleDateString('pt-BR')}</td>
-              <td>{order.itemsCount}</td>
+              {/* AQUI ESTAVA O ERRO: Mudei de order.itemsCount para order.items.length */}
+              <td>{order.items.length}</td>
               <td className={styles.totalColumn}>
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(order.total)}
               </td>
