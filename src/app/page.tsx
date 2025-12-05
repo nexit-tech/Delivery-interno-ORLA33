@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 
 export default function Home() {
-  // Redirecionamento automático da raiz para a lista de pedidos
-  redirect('/pedidos');
+  // Antes redirecionava para /pedidos, agora força o Login
+  redirect('/login');
 }
