@@ -1,0 +1,44 @@
+.navbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background-color: white;
+  border-top: 1px solid #eaecf0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100; /* Fica acima de tudo */
+  box-shadow: 0 -4px 10px rgba(0,0,0,0.03);
+}
+
+.navItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #98a2b3;
+  text-decoration: none;
+  width: 100%;
+  height: 100%;
+  transition: all 0.2s;
+}
+
+.navItem:active {
+  background-color: #f9fafb;
+}
+
+.label {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.active {
+  color: #ea1d2c; /* Vermelho da marca */
+}
+
+.active .label {
+  font-weight: 700;
+}

@@ -1,20 +1,21 @@
 import { Order } from '@/types';
-import { Clock, User, CheckCircle, ArrowRight, Play } from 'lucide-react';
+import { Clock, User, CheckCircle, ArrowRight, Play, XCircle } from 'lucide-react';
 import styles from './styles.module.css';
 
 interface OrderCardProps {
   order: Order;
   onAdvance: (id: string) => void;
+  onReject?: (id: string) => void; // Nova prop opcional
 }
 
-export default function OrderCard({ order, onAdvance }: OrderCardProps) {
+export default function OrderCard({ order, onAdvance, onReject }: OrderCardProps) {
   
   const time = new Date(order.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-  // Função auxiliar para evitar que o clique no botão abra o modal
-  const handleButtonClick = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation(); // <--- O SEGREDO ESTÁ AQUI! (Impede de abrir o modal)
-    onAdvance(id);
+  // Função para evitar abrir o modal ao clicar nos botões
+  const handleAction = (e: React.MouseEvent, action: () => void) => {
+    e.stopPropagation();
+    action();
   };
 
   return (
@@ -45,33 +46,49 @@ export default function OrderCard({ order, onAdvance }: OrderCardProps) {
           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(order.total)}
         </div>
         
-        {/* Botões Atualizados com a trava de clique */}
-        {order.status === 'PENDING' && (
-          <button 
-            onClick={(e) => handleButtonClick(e, order.id)} 
-            className={`${styles.btn} ${styles.btnAccept}`}
-          >
-            Aceitar <Play size={16} />
-          </button>
-        )}
+        <div className={styles.actions}>
+          {/* Ações para PENDENTE: Recusar e Aceitar */}
+          {order.status === 'PENDING' && (
+            <>
+              {onReject && (
+                <button 
+                  onClick={(e) => handleAction(e, () => onReject(order.id))} 
+                  className={`${styles.btn} ${styles.btnReject}`}
+                  title="Recusar Pedido"
+                >
+                  <XCircle size={16} /> Recusar
+                </button>
+              )}
+              <button 
+                onClick={(e) => handleAction(e, () => onAdvance(order.id))} 
+                className={`${styles.btn} ${styles.btnAccept}`}
+                title="Aceitar Pedido"
+              >
+                Aceitar <Play size={16} />
+              </button>
+            </>
+          )}
 
-        {order.status === 'PROCESSING' && (
-          <button 
-            onClick={(e) => handleButtonClick(e, order.id)} 
-            className={`${styles.btn} ${styles.btnAdvance}`}
-          >
-            Pronto <ArrowRight size={16} />
-          </button>
-        )}
+          {/* Ações para EM PREPARO */}
+          {order.status === 'PROCESSING' && (
+            <button 
+              onClick={(e) => handleAction(e, () => onAdvance(order.id))} 
+              className={`${styles.btn} ${styles.btnAdvance}`}
+            >
+              Pronto <ArrowRight size={16} />
+            </button>
+          )}
 
-        {order.status === 'READY' && (
-          <button 
-            onClick={(e) => handleButtonClick(e, order.id)} 
-            className={`${styles.btn} ${styles.btnFinish}`}
-          >
-            Concluir <CheckCircle size={16} />
-          </button>
-        )}
+          {/* Ações para PRONTO */}
+          {order.status === 'READY' && (
+            <button 
+              onClick={(e) => handleAction(e, () => onAdvance(order.id))} 
+              className={`${styles.btn} ${styles.btnFinish}`}
+            >
+              Concluir <CheckCircle size={16} />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

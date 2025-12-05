@@ -1,19 +1,19 @@
 .card {
-  background: #ffffff; /* Card branco puro */
-  border: 1px solid #eaecf0; /* Borda cinza muito sutil */
+  background: #ffffff;
+  border: 1px solid #eaecf0;
   border-radius: 12px;
   padding: 1.25rem;
   margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 4px 8px rgba(0,0,0,0.02); /* Sombra elegante */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 4px 8px rgba(0,0,0,0.02);
   transition: all 0.2s ease;
 }
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 16px -4px rgba(0, 0, 0, 0.08); /* Sombra aumenta ao passar o mouse */
+  box-shadow: 0 12px 16px -4px rgba(0, 0, 0, 0.08);
   border-color: #d0d5dd;
 }
 
@@ -29,7 +29,7 @@
   gap: 0.5rem;
   font-weight: 700;
   font-size: 1rem;
-  color: #101828; /* Preto "suave" */
+  color: #101828;
 }
 
 .orderId {
@@ -57,7 +57,7 @@
 }
 
 .itemsList {
-  background: #f9fafb; /* Cinza claríssimo para destacar a área de itens */
+  background: #f9fafb;
   padding: 1rem;
   border-radius: 8px;
   display: flex;
@@ -81,9 +81,13 @@
   min-width: 20px;
 }
 
+.itemName {
+  font-weight: 500;
+}
+
 .obs {
   font-size: 0.8rem;
-  color: #d92d20; /* Observação em vermelho suave para chamar atenção */
+  color: #d92d20;
   margin-top: 2px;
   margin-left: 2rem;
 }
@@ -95,45 +99,67 @@
   margin-top: 0.5rem;
   padding-top: 1rem;
   border-top: 1px solid #eaecf0;
+  gap: 1rem;
 }
 
 .total {
   font-weight: 800;
   font-size: 1.1rem;
   color: #101828;
+  white-space: nowrap;
 }
 
-/* BOTÕES REFINADOS */
+/* --- BOTÕES --- */
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+  justify-content: flex-end;
+}
+
 .btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  padding: 0.6rem 1.2rem;
+  padding: 0.6rem 1rem;
   border-radius: 8px;
-  border: none;
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s;
-  color: white;
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+  border: 1px solid transparent;
 }
 
-.btn:active {
-  transform: scale(0.98);
-}
+.btn:active { transform: scale(0.98); }
 
+/* Botão Aceitar (Verde agora) */
 .btnAccept {
-  background-color: #ea1d2c; /* Vermelho iFood */
+  background-color: #12b76a; 
+  color: white;
+  border: 1px solid #12b76a;
+  flex: 1; /* Ocupa espaço igual */
 }
-.btnAccept:hover { background-color: #d11927; }
+.btnAccept:hover { background-color: #039855; border-color: #039855; }
 
+/* Botão Recusar (Novo: Borda Vermelha) */
+.btnReject {
+  background-color: white;
+  color: #b42318;
+  border: 1px solid #fecaca;
+  flex: 1; /* Ocupa espaço igual */
+}
+.btnReject:hover { background-color: #fef2f2; border-color: #b42318; }
+
+/* Outros Status */
 .btnAdvance {
-  background-color: #f79009; /* Laranja forte */
+  background-color: #f79009;
+  color: white;
 }
 .btnAdvance:hover { background-color: #dc6803; }
 
 .btnFinish {
-  background-color: #12b76a; /* Verde sucesso */
+  background-color: #12b76a;
+  color: white;
 }
 .btnFinish:hover { background-color: #039855; }

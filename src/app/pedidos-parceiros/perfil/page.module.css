@@ -1,0 +1,162 @@
+.container {
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100vw; /* Garante que não passa da largura da viewport */
+  background-color: #f2f4f7;
+  padding-bottom: 120px; /* Espaço seguro para a Navbar */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden; /* O SEGRED0: Trava o scroll lateral */
+  font-family: inherit;
+}
+
+/* --- CABEÇALHO DO PERFIL --- */
+.profileHeader {
+  background-color: white;
+  width: 100%;
+  padding: 3rem 1.5rem 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-bottom: 1px solid #eaecf0;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.avatarCircle {
+  width: 96px;
+  height: 96px;
+  background-color: #f9fafb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  border: 4px solid white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* Sombra mais bonita */
+}
+
+.partnerName {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #101828;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.roleLabel {
+  font-size: 0.8rem;
+  color: #027a48;
+  background-color: #ecfdf3;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  border: 1px solid #abefc6;
+}
+
+/* --- FORMULÁRIO --- */
+.formContainer {
+  width: 100%;
+  max-width: 500px; /* Limita em telas grandes */
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-sizing: border-box; /* Garante que o padding não estoure a largura */
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputGroup label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #344054;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Input Editável */
+.inputEditable {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  font-size: 1rem;
+  color: #101828;
+  outline: none;
+  background-color: white;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+}
+
+.inputEditable:focus {
+  border-color: #101828;
+  box-shadow: 0 0 0 4px rgba(16, 24, 40, 0.05); /* Efeito de foco premium */
+}
+
+/* Input Bloqueado */
+.inputDisabled {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid #eaecf0;
+  border-radius: 10px;
+  font-size: 1rem;
+  color: #667085;
+  background-color: #f9fafb;
+  cursor: not-allowed;
+  font-weight: 500;
+}
+
+/* Linha com 2 colunas */
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.divider {
+  height: 1px;
+  background-color: #eaecf0;
+  margin: 0.5rem 0;
+}
+
+/* Botão Salvar */
+.saveBtn {
+  margin-top: 1rem;
+  width: 100%;
+  background-color: #101828;
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background 0.2s, transform 0.1s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.saveBtn:hover {
+  background-color: #1d2939;
+}
+
+.saveBtn:active {
+  transform: scale(0.98);
+}
+
+.saveBtn:disabled {
+  background-color: #98a2b3;
+  cursor: not-allowed;
+  box-shadow: none;
+}

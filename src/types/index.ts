@@ -1,15 +1,18 @@
-export type OrderStatus = 'PENDING' | 'PROCESSING' | 'READY' | 'COMPLETED';
+export type OrderStatus = 'PENDING' | 'PROCESSING' | 'READY' | 'COMPLETED' | 'NOT_ACCEPTED';
 
 export interface OrderItem {
   name: string;
   quantity: number;
   observation?: string;
+  price?: number; 
 }
 
 export interface Order {
   id: string;
+  uuid?: string;
   partnerName: string;
-  date: string; // ISO string
+  partnerWhatsapp?: string;
+  date: string;
   items: OrderItem[];
   total: number;
   status: OrderStatus;
@@ -26,5 +29,5 @@ export interface Partner {
   name: string;
   whatsapp: string;
   login: string;
-  password: string; // Exibição direta conforme solicitado
+  password: string;
 }

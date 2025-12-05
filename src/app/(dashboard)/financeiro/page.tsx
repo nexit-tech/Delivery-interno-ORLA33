@@ -1,88 +1,134 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Calendar, DollarSign, TrendingUp, ShoppingCart, Filter, FileText } from 'lucide-react'; // Mudei icone pra FileText (PDF)
+import { useState, useEffect } from 'react';
+import { Calendar, DollarSign, TrendingUp, ShoppingCart, Filter, FileText } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import OrderModal from '../pedidos/_components/OrderModal'; // Importando o Modal existente
+import { supabase } from '@/lib/supabase'; // Conexão real
+import OrderModal from '../pedidos/_components/OrderModal';
 import styles from './page.module.css';
 import { Order } from '@/types';
 
-// Mock com datas variadas
-const MOCK_SALES_DATA: Order[] = [
-  { id: '1024', partnerName: 'Quiosque do Sol', date: '2023-12-01T14:00:00', total: 150.00, status: 'COMPLETED', items: [{ name: 'X-Bacon', quantity: 2 }, { name: 'Coca Zero', quantity: 2 }] },
-  { id: '1025', partnerName: 'Quiosque do Sol', date: '2023-12-02T10:30:00', total: 89.90, status: 'COMPLETED', items: [{ name: 'Açaí 500ml', quantity: 2 }] },
-  { id: '1026', partnerName: 'Arena Beach', date: '2023-12-02T11:00:00', total: 200.00, status: 'COMPLETED', items: [{ name: 'Porção de Camarão', quantity: 1 }] },
-  { id: '1027', partnerName: 'Bar da Piscina', date: '2023-12-03T18:00:00', total: 450.00, status: 'COMPLETED', items: [{ name: 'Torre de Chopp', quantity: 3 }, { name: 'Isca de Peixe', quantity: 2 }] },
-  { id: '1028', partnerName: 'Quiosque do Sol', date: '2023-12-05T09:00:00', total: 120.00, status: 'COMPLETED', items: [{ name: 'Suco Natural', quantity: 4 }] },
-  { id: '1029', partnerName: 'Arena Beach', date: '2023-12-05T15:00:00', total: 300.50, status: 'COMPLETED', items: [{ name: 'Combo Família', quantity: 1 }] },
-  { id: '1010', partnerName: 'Bar da Piscina', date: '2023-11-20T12:00:00', total: 1000.00, status: 'COMPLETED', items: [{ name: 'Festa Privada', quantity: 1 }] },
-];
-
-const PARTNERS_LIST = ['Quiosque do Sol', 'Arena Beach', 'Bar da Piscina'];
-
 export default function FinanceiroPage() {
-  const today = new Date().toISOString().split('T')[0];
-  const [startDate, setStartDate] = useState('2023-11-01');
-  const [endDate, setEndDate] = useState(today);
+  // Configura datas iniciais (Início do mês atual até hoje)
+  const today = new Date();
+  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+  
+  const [startDate, setStartDate] = useState(firstDay.toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState(today.toISOString().split('T')[0]);
   const [selectedPartner, setSelectedPartner] = useState('all');
 
-  // Estado para controlar o Modal
+  // Estados de dados
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [partnersList, setPartnersList] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Estado do Modal
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  // --- FILTROS ---
-  const filteredData = useMemo(() => {
-    return MOCK_SALES_DATA.filter(order => {
-      // Ajuste de fuso: pegamos a parte da data da string ISO
-      const orderDate = order.date.split('T')[0];
-      const isDateInRange = orderDate >= startDate && orderDate <= endDate;
-      const isPartnerMatch = selectedPartner === 'all' || order.partnerName === selectedPartner;
-      return isDateInRange && isPartnerMatch && order.status === 'COMPLETED';
-    });
+  // --- 1. BUSCAR LISTA DE PARCEIROS (Para o filtro) ---
+  useEffect(() => {
+    async function fetchPartners() {
+      const { data } = await supabase.from('partners').select('name').order('name');
+      if (data) {
+        setPartnersList(data.map((p: any) => p.name));
+      }
+    }
+    fetchPartners();
+  }, []);
+
+  // --- 2. BUSCAR DADOS FINANCEIROS ---
+  useEffect(() => {
+    async function fetchFinancialData() {
+      setLoading(true);
+      try {
+        // Query base: Busca pedidos CONCLUÍDOS dentro do período
+        let query = supabase
+          .from('orders')
+          .select(`
+            id,
+            created_at,
+            total,
+            status,
+            partners ( name ),
+            order_items ( product_name, quantity, observation, price )
+          `)
+          .eq('status', 'COMPLETED') 
+          .gte('created_at', `${startDate}T00:00:00`)
+          .lte('created_at', `${endDate}T23:59:59`)
+          .order('created_at', { ascending: false });
+
+        const { data, error } = await query;
+
+        if (error) throw error;
+
+        if (data) {
+          // Formata os dados para o front
+          let formattedOrders = data.map((order: any) => ({
+            id: order.id.toString(),
+            partnerName: order.partners?.name || 'Desconhecido',
+            date: order.created_at,
+            total: order.total,
+            status: order.status,
+            items: order.order_items.map((item: any) => ({
+              name: item.product_name,
+              quantity: item.quantity,
+              observation: item.observation,
+              price: item.price
+            }))
+          }));
+
+          // Filtragem por parceiro no front-end (mais simples para dashboard leve)
+          if (selectedPartner !== 'all') {
+            formattedOrders = formattedOrders.filter((o: any) => o.partnerName === selectedPartner);
+          }
+
+          setOrders(formattedOrders);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar financeiro:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchFinancialData();
   }, [startDate, endDate, selectedPartner]);
 
-  // --- KPIS ---
-  const totalRevenue = filteredData.reduce((acc, curr) => acc + curr.total, 0);
-  const totalOrders = filteredData.length;
+  // --- CÁLCULO DE KPIS ---
+  const totalRevenue = orders.reduce((acc, curr) => acc + curr.total, 0);
+  const totalOrders = orders.length;
   const averageTicket = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
   // --- FORMATADORES ---
   const formatCurrency = (val: number) => 
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 
-  // Formatação de Data/Hora segura para o Fuso Brasileiro
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit',
     });
   };
 
-  // --- GERAR PDF ---
+  // --- EXPORTAR PDF ---
   const handleExportPDF = () => {
     const doc = new jsPDF();
 
-    // Título
     doc.setFontSize(18);
     doc.text('Relatório Financeiro', 14, 20);
     
-    // Subtítulo com info do filtro
     doc.setFontSize(10);
     doc.text(`Período: ${new Date(startDate).toLocaleDateString('pt-BR')} até ${new Date(endDate).toLocaleDateString('pt-BR')}`, 14, 28);
     doc.text(`Parceiro: ${selectedPartner === 'all' ? 'Todos' : selectedPartner}`, 14, 34);
 
-    // Resumo (KPIs no PDF)
     doc.setFontSize(12);
     doc.text(`Faturamento: ${formatCurrency(totalRevenue)}`, 14, 45);
     doc.text(`Pedidos: ${totalOrders}`, 80, 45);
     doc.text(`Ticket Médio: ${formatCurrency(averageTicket)}`, 140, 45);
 
-    // Tabela
-    const tableData = filteredData.map(row => [
+    const tableData = orders.map(row => [
       formatDateTime(row.date),
       row.partnerName,
       `#${row.id}`,
@@ -94,15 +140,14 @@ export default function FinanceiroPage() {
       head: [['Data/Hora', 'Parceiro', 'ID Pedido', 'Valor']],
       body: tableData,
       theme: 'grid',
-      headStyles: { fillColor: [234, 29, 44] }, // Cor vermelha do seu tema
+      headStyles: { fillColor: [234, 29, 44] },
     });
 
-    doc.save(`relatorio_financeiro_${startDate}.pdf`);
+    doc.save(`relatorio_${startDate}.pdf`);
   };
 
   return (
     <main className={styles.container}>
-      
       <header className={styles.header}>
         <div>
           <h1 className={styles.title}>Relatório Financeiro</h1>
@@ -127,7 +172,9 @@ export default function FinanceiroPage() {
           <label><Filter size={14}/> Filtrar por Parceiro</label>
           <select value={selectedPartner} onChange={(e) => setSelectedPartner(e.target.value)}>
             <option value="all">Todos os Parceiros</option>
-            {PARTNERS_LIST.map(p => <option key={p} value={p}>{p}</option>)}
+            {partnersList.map(p => (
+              <option key={p} value={p}>{p}</option>
+            ))}
           </select>
         </div>
       </section>
@@ -161,12 +208,14 @@ export default function FinanceiroPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredData.length > 0 ? (
-                filteredData.map(order => (
+              {loading ? (
+                <tr><td colSpan={5} className={styles.emptyState}>Carregando...</td></tr>
+              ) : orders.length > 0 ? (
+                orders.map(order => (
                   <tr 
                     key={order.id} 
-                    onClick={() => setSelectedOrder(order)} // <--- CLIQUE PARA ABRIR MODAL
-                    className={styles.clickableRow} // Adicionei classe para cursor pointer
+                    onClick={() => setSelectedOrder(order)}
+                    className={styles.clickableRow}
                   >
                     <td>{formatDateTime(order.date)}</td>
                     <td className={styles.partnerName}>{order.partnerName}</td>
@@ -176,10 +225,10 @@ export default function FinanceiroPage() {
                   </tr>
                 ))
               ) : (
-                <tr><td colSpan={5} className={styles.emptyState}>Nenhuma venda encontrada.</td></tr>
+                <tr><td colSpan={5} className={styles.emptyState}>Nenhuma venda encontrada neste período.</td></tr>
               )}
             </tbody>
-            {filteredData.length > 0 && (
+            {!loading && orders.length > 0 && (
               <tfoot>
                 <tr className={styles.footerRow}>
                   <td colSpan={4} style={{ textAlign: 'right' }}>Total do Período:</td>
@@ -191,14 +240,12 @@ export default function FinanceiroPage() {
         </div>
       </section>
 
-      {/* MODAL DE DETALHES (Reutilizando o existente) */}
       <OrderModal 
         isOpen={!!selectedOrder}
         order={selectedOrder}
         onClose={() => setSelectedOrder(null)}
-        onAdvance={() => {}} // Função vazia, pois no histórico não avançamos status
+        onAdvance={() => {}} 
       />
-
     </main>
   );
 }

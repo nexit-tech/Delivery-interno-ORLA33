@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google"; 
 import "./globals.css";
+import { AuthProvider } from "@/contexts/AuthContext"; // <--- Importe o Contexto
 
-// Configurando a fonte com pesos comuns (400, 600, 700)
 const montserrat = Montserrat({ 
   subsets: ["latin"],
   weight: ['400', '500', '600', '700'],
@@ -10,7 +10,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Gestor de Pedidos",
+  title: "Portal Parceiros",
   description: "Sistema de gerenciamento",
 };
 
@@ -21,8 +21,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      {/* A classe aqui aplica a fonte no site todo */}
-      <body className={montserrat.className}>{children}</body>
+      <body className={montserrat.className}>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      </body>
     </html>
   );
 }

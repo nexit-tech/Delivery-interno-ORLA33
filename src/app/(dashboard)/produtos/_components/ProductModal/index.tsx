@@ -8,10 +8,10 @@ import styles from './styles.module.css';
 interface ProductModalProps {
   isOpen: boolean;
   onClose: () => void;
-  // Agora aceitamos qualquer objeto no save, pois vamos manipular os campos na página pai
-  onSave: (data: any) => void; 
-  initialData?: any; // Usamos any aqui para facilitar a transição do ID
-  categories: Category[];
+  // Usamos 'any' no save para facilitar o envio do category_id misturado com dados do form
+  onSave: (product: any) => void; 
+  initialData?: Product | null;
+  categories: Category[]; // <--- Lista de categorias vinda do banco
 }
 
 export default function ProductModal({ isOpen, onClose, onSave, initialData, categories }: ProductModalProps) {
@@ -23,11 +23,12 @@ export default function ProductModal({ isOpen, onClose, onSave, initialData, cat
   useEffect(() => {
     if (isOpen && initialData) {
       setName(initialData.name);
-      // Pega o ID da categoria (seja do banco ou do objeto local)
-      setCategoryId(initialData.category_id || initialData.categoryId || '');
-      setPrice(initialData.price?.toFixed(2) || '');
+      // Tenta pegar o ID da categoria se já existir, senão fica vazio
+      setCategoryId(initialData.category_id || '');
+      setPrice(initialData.price.toFixed(2));
       setActive(initialData.active);
     } else {
+      // Limpa o form para novo produto
       setName('');
       setCategoryId('');
       setPrice('');
@@ -41,8 +42,7 @@ export default function ProductModal({ isOpen, onClose, onSave, initialData, cat
     e.preventDefault();
     onSave({
       name,
-      // Envia o ID da categoria selecionada
-      category_id: categoryId, 
+      category_id: categoryId, // Manda o UUID selecionado
       price: parseFloat(price.replace(',', '.')) || 0,
       active
     });
@@ -52,12 +52,11 @@ export default function ProductModal({ isOpen, onClose, onSave, initialData, cat
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        
         <div className={styles.header}>
           <h2>{initialData ? 'Editar Produto' : 'Novo Produto'}</h2>
           <button onClick={onClose}><X size={20} /></button>
         </div>
-
+        
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.field}>
             <label>Nome do Produto</label>
@@ -79,8 +78,7 @@ export default function ProductModal({ isOpen, onClose, onSave, initialData, cat
                 required
               >
                 <option value="" disabled>Selecione...</option>
-                {categories.filter(c => c.active).map((cat) => (
-                  // O valor agora é o ID, mas mostramos o NOME
+                {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.name}
                   </option>
@@ -112,9 +110,7 @@ export default function ProductModal({ isOpen, onClose, onSave, initialData, cat
           </div>
 
           <div className={styles.footer}>
-            <button type="button" className={styles.cancelBtn} onClick={onClose}>
-              Cancelar
-            </button>
+            <button type="button" className={styles.cancelBtn} onClick={onClose}>Cancelar</button>
             <button type="submit" className={styles.saveBtn}>
               <Save size={18} /> Salvar
             </button>

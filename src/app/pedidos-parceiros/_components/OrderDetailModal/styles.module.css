@@ -1,0 +1,64 @@
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 99999;
+  display: flex; align-items: flex-end; /* Vem de baixo no celular */
+  justify-content: center; backdrop-filter: blur(3px);
+}
+
+@media(min-width: 640px) { .overlay { align-items: center; } }
+
+.modal {
+  background: white; width: 100%; max-width: 500px;
+  border-radius: 20px 20px 0 0;
+  padding: 1.5rem; display: flex; flex-direction: column;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 85vh;
+}
+
+@media(min-width: 640px) { .modal { border-radius: 16px; animation: scaleUp 0.2s ease-out; } }
+
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 1.5rem; border-bottom: 1px solid #f2f4f7; padding-bottom: 1rem;
+}
+
+.labelId {
+  display: block; font-size: 1.25rem; font-weight: 800; color: #101828; margin-bottom: 4px;
+}
+
+.date { font-size: 0.9rem; color: #667085; }
+
+.closeBtn {
+  background: #f2f4f7; border: none; padding: 8px; border-radius: 50%;
+  cursor: pointer; color: #667085;
+}
+
+.body { flex: 1; overflow-y: auto; margin-bottom: 1rem; }
+
+.statusRow {
+  display: flex; justify-content: space-between; align-items: center;
+  background: #ecfdf3; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem;
+}
+.statusLabel { font-size: 0.9rem; color: #027a48; font-weight: 500; }
+.statusValue { font-size: 0.9rem; color: #027a48; font-weight: 700; text-transform: uppercase; }
+
+.divider { height: 1px; background: #eaecf0; margin: 1rem 0; }
+
+.sectionTitle { font-size: 0.9rem; font-weight: 700; color: #344054; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.itemsList { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+
+.item { display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
+.itemInfo { display: flex; align-items: center; gap: 0.5rem; }
+.qty { font-weight: 700; color: #101828; min-width: 20px; }
+.name { color: #344054; }
+.itemPrice { font-weight: 600; color: #101828; }
+
+.footer {
+  background: #f9fafb; padding: 1rem; border-radius: 12px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.totalLabel { font-size: 0.9rem; font-weight: 600; color: #667085; }
+.totalValue { font-size: 1.4rem; font-weight: 800; color: #101828; }
