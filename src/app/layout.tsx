@@ -10,8 +10,8 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Portal Parceiros",
-  description: "Sistema de gerenciamento",
+  title: "Delivery interno - Orla33",
+  description: "Sistema de delivery interno para parceiros Orla33",
 };
 
 export default function RootLayout({
