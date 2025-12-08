@@ -24,7 +24,7 @@ export interface Category {
   active: boolean;
 }
 
-// ADICIONEI AQUI A DEFINIÇÃO QUE FALTAVA
+// ESTA É A PARTE QUE ESTAVA FALTANDO OU NÃO FOI ENVIADA
 export interface Product {
   id: string;
   name: string;
