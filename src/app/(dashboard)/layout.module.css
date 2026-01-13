@@ -5,9 +5,23 @@
   flex-direction: column;
 }
 
+/* Por padrão (Desktop), padding no topo */
 .mainContent {
-  /* Adicionamos padding-top igual à altura da Navbar (70px) */
   padding-top: 70px; 
   width: 100%;
-  flex: 1; /* Ocupa o resto da tela */
+  flex: 1;
+}
+
+/* MEDIA QUERY MOBILE */
+@media (max-width: 768px) {
+  /* Esconde navbar superior */
+  .desktopNav {
+    display: none;
+  }
+
+  /* Remove padding do topo e adiciona em baixo (para não ficar atrás do menu) */
+  .mainContent {
+    padding-top: 0;
+    padding-bottom: 80px; 
+  }
 }

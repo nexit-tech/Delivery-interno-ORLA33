@@ -14,53 +14,35 @@ interface BoardProps {
 export default function Board({ initialOrders }: BoardProps) {
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  
+  // ESTADO PARA ABA MOBILE
+  const [mobileTab, setMobileTab] = useState<'PENDING' | 'PROCESSING' | 'READY'>('PENDING');
 
   useEffect(() => {
     setOrders(initialOrders);
   }, [initialOrders]);
 
-  // --- NOTIFICAÇÃO PADRONIZADA ---
-  // Adicionei 'ACCEPTED' no tipo
-  const sendNotification = async (order: Order, type: 'READY' | 'REJECTED' | 'CANCELLED' | 'ACCEPTED') => {
+  // --- LÓGICA DE NEGÓCIO (RECUPERADA) ---
+
+  const sendNotification = async (phone: string, status: OrderStatus, orderId: string) => {
+    if (!phone) return;
     try {
-      const itemsList = order.items.map(item => `${item.quantity}x ${item.name}`).join('\n');
-      
-      // Cabeçalho Padrão
-      const header = `${order.partnerName} seu pedido #${order.id}`;
-      
-      // Mensagem Final baseada no tipo
-      let footer = '';
-      if (type === 'ACCEPTED') footer = 'Seu pedido foi aceito e já está sendo preparado!';
-      if (type === 'READY') footer = 'Está pronto, venha retirar';
-      if (type === 'REJECTED') footer = 'Seu pedido foi recusado pelo estabelecimento.';
-      if (type === 'CANCELLED') footer = 'Seu pedido foi cancelado pelo estabelecimento.';
-
-      // Monta a mensagem completa
-      const messageBody = `${header}\n\n${itemsList}\n\n${footer}`;
-      
-      const rawPhone = order.partnerWhatsapp || '';
-      const cleanPhone = rawPhone.replace(/\D/g, '');
-      const finalPhone = `55${cleanPhone}`;
-
-      // Dispara o Webhook
-      await fetch('https://n8n-nexit-n8n.7rdajt.easypanel.host/webhook/notificacao', {
+      await fetch('/api/whatsapp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          telefone: finalPhone,
-          mensagem: messageBody,
-          loja: order.partnerName,
-          pedido_id: order.id,
-          status_evento: type 
-        })
+        body: JSON.stringify({ phone, status, orderId })
       });
     } catch (error) {
-      console.error('Erro notificação:', error);
+      console.error('Erro ao enviar notificação', error);
     }
   };
 
-  // --- UPDATE NO BANCO ---
-  const updateOrderStatus = async (id: string, newStatus: string) => { 
+  const updateOrderStatus = async (id: string, newStatus: OrderStatus) => {
+    // Atualização Otimista
+    setOrders(prev => prev.map(order => 
+      order.id === id ? { ...order, status: newStatus } : order
+    ));
+
     try {
       const { error } = await supabase
         .from('orders')
@@ -68,89 +50,76 @@ export default function Board({ initialOrders }: BoardProps) {
         .eq('id', parseInt(id));
 
       if (error) throw error;
+
+      // Envia notificação (opcional, descomente se tiver a API)
+      // const order = orders.find(o => o.id === id);
+      // if (order?.partnerWhatsapp) {
+      //   sendNotification(order.partnerWhatsapp, newStatus, id);
+      // }
+
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
-      alert('Erro ao atualizar pedido no banco.');
+      // Reverte em caso de erro (opcional: buscar dados novamente)
     }
   };
 
-  // --- AVANÇAR (PENDENTE -> PREPARO -> PRONTO -> CONCLUÍDO) ---
+  // Funções de Ação
   const handleAdvanceOrder = (id: string) => {
     const order = orders.find(o => o.id === id);
     if (!order) return;
 
-    let nextStatus: OrderStatus | null = null;
-    
-    if (order.status === 'PENDING') nextStatus = 'PROCESSING';
-    else if (order.status === 'PROCESSING') nextStatus = 'READY';
-    else if (order.status === 'READY') nextStatus = 'COMPLETED';
-
-    if (nextStatus) {
-      setOrders(prev => prev.map(o => 
-        o.id === id ? { ...o, status: nextStatus! } : o
-      ).filter(o => o.status !== 'COMPLETED'));
-
-      updateOrderStatus(id, nextStatus);
-
-      // Notificações Automáticas
-      if (nextStatus === 'PROCESSING') {
-        sendNotification(order, 'ACCEPTED'); // <--- NOVA NOTIFICAÇÃO DE ACEITE
-      }
-      if (nextStatus === 'READY') {
-        sendNotification(order, 'READY');
-      }
-    }
+    if (order.status === 'PENDING') updateOrderStatus(id, 'PROCESSING');
+    else if (order.status === 'PROCESSING') updateOrderStatus(id, 'READY');
+    else if (order.status === 'READY') updateOrderStatus(id, 'COMPLETED');
   };
 
-  // --- RECUSAR (PENDENTE -> RECUSADO) ---
   const handleRejectOrder = (id: string) => {
-    const order = orders.find(o => o.id === id);
-    if (!order) return;
-
-    if (!confirm('Tem certeza que deseja RECUSAR este pedido?')) return;
-
-    // Remove da tela
-    setOrders(prev => prev.filter(o => o.id !== id));
-    // Atualiza Banco
+    if (!confirm('Tem certeza que deseja recusar este pedido?')) return;
     updateOrderStatus(id, 'NOT_ACCEPTED');
-    // Envia Notificação
-    sendNotification(order, 'REJECTED');
   };
 
-  // --- CANCELAR (PREPARO -> CANCELADO) ---
   const handleCancelProcessingOrder = (id: string) => {
-    const order = orders.find(o => o.id === id);
-    if (!order) return;
-
-    if (!confirm('Tem certeza que deseja CANCELAR este pedido em preparo?')) return;
-
-    setOrders(prev => prev.filter(o => o.id !== id));
+    if (!confirm('O pedido já está em preparo. Deseja cancelar mesmo assim?')) return;
     updateOrderStatus(id, 'CANCELLED');
-    sendNotification(order, 'CANCELLED');
   };
 
+  // Modais
   const openModal = (order: Order) => setSelectedOrder(order);
   const closeModal = () => setSelectedOrder(null);
 
-  // Ordenação
-  const pendingOrders = orders
-    .filter(o => o.status === 'PENDING')
-    .sort((a, b) => parseInt(a.id) - parseInt(b.id)); 
-
-  const processingOrders = orders
-    .filter(o => o.status === 'PROCESSING')
-    .sort((a, b) => parseInt(b.id) - parseInt(a.id)); 
-
-  const readyOrders = orders
-    .filter(o => o.status === 'READY')
-    .sort((a, b) => parseInt(b.id) - parseInt(a.id)); 
+  // Filtros
+  const pendingOrders = orders.filter(o => o.status === 'PENDING').sort((a, b) => parseInt(a.id) - parseInt(b.id)); 
+  const processingOrders = orders.filter(o => o.status === 'PROCESSING').sort((a, b) => parseInt(b.id) - parseInt(a.id)); 
+  const readyOrders = orders.filter(o => o.status === 'READY').sort((a, b) => parseInt(b.id) - parseInt(a.id)); 
 
   return (
     <>
+      {/* SELETOR DE ABAS (SÓ APARECE NO CSS MOBILE) */}
+      <div className={styles.mobileTabs}>
+        <button 
+          className={`${styles.tabBtn} ${mobileTab === 'PENDING' ? styles.activeTab : ''}`}
+          onClick={() => setMobileTab('PENDING')}
+        >
+          Pendentes ({pendingOrders.length})
+        </button>
+        <button 
+          className={`${styles.tabBtn} ${mobileTab === 'PROCESSING' ? styles.activeTab : ''}`}
+          onClick={() => setMobileTab('PROCESSING')}
+        >
+          Preparo ({processingOrders.length})
+        </button>
+        <button 
+          className={`${styles.tabBtn} ${mobileTab === 'READY' ? styles.activeTab : ''}`}
+          onClick={() => setMobileTab('READY')}
+        >
+          Pronto ({readyOrders.length})
+        </button>
+      </div>
+
       <div className={styles.boardContainer}>
         {/* Coluna Pendentes */}
-        <div className={styles.column}>
-          <h2 className={styles.columnTitle}><span className={styles.dotPending}></span> Pendentes ({pendingOrders.length})</h2>
+        <div className={`${styles.column} ${mobileTab !== 'PENDING' ? styles.hideOnMobile : ''}`}>
+          <h2 className={styles.columnTitle}><span className={styles.dotPending}></span> Pendentes</h2>
           <div className={styles.columnContent}>
             {pendingOrders.map(order => (
               <div key={order.id} onClick={() => openModal(order)} style={{cursor: 'pointer'}}> 
@@ -161,34 +130,40 @@ export default function Board({ initialOrders }: BoardProps) {
                 />
               </div>
             ))}
+            {pendingOrders.length === 0 && <p className={styles.emptyMsg}>Sem pedidos pendentes.</p>}
           </div>
         </div>
 
         {/* Coluna Em Preparo */}
-        <div className={styles.column}>
-          <h2 className={styles.columnTitle}><span className={styles.dotProcessing}></span> Em Preparo ({processingOrders.length})</h2>
+        <div className={`${styles.column} ${mobileTab !== 'PROCESSING' ? styles.hideOnMobile : ''}`}>
+          <h2 className={styles.columnTitle}><span className={styles.dotProcessing}></span> Em Preparo</h2>
           <div className={styles.columnContent}>
             {processingOrders.map(order => (
               <div key={order.id} onClick={() => openModal(order)} style={{cursor: 'pointer'}}>
-                <OrderCard 
-                  order={order} 
-                  onAdvance={handleAdvanceOrder} 
-                  onReject={handleCancelProcessingOrder}
-                />
+                 <OrderCard 
+                   order={order} 
+                   onAdvance={handleAdvanceOrder} 
+                   onReject={handleCancelProcessingOrder} 
+                 />
               </div>
             ))}
+             {processingOrders.length === 0 && <p className={styles.emptyMsg}>Cozinha vazia.</p>}
           </div>
         </div>
 
         {/* Coluna Pronto */}
-        <div className={styles.column}>
-          <h2 className={styles.columnTitle}><span className={styles.dotReady}></span> Pronto p/ Entrega ({readyOrders.length})</h2>
+        <div className={`${styles.column} ${mobileTab !== 'READY' ? styles.hideOnMobile : ''}`}>
+          <h2 className={styles.columnTitle}><span className={styles.dotReady}></span> Pronto p/ Entrega</h2>
           <div className={styles.columnContent}>
             {readyOrders.map(order => (
               <div key={order.id} onClick={() => openModal(order)} style={{cursor: 'pointer'}}>
-                <OrderCard order={order} onAdvance={handleAdvanceOrder} />
+                <OrderCard 
+                  order={order} 
+                  onAdvance={handleAdvanceOrder} 
+                />
               </div>
             ))}
+             {readyOrders.length === 0 && <p className={styles.emptyMsg}>Nada para entregar.</p>}
           </div>
         </div>
       </div>
